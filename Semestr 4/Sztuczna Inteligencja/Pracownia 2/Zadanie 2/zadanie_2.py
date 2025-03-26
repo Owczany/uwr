@@ -13,7 +13,7 @@ simple_maaze = [['#', '#', '#', '#', '#'],
                 ['#', ' ', ' ', ' ', '#'],
                 ],
 
-
+#Komentarz
 
 def read_input_file(filename):
     def get(line):
