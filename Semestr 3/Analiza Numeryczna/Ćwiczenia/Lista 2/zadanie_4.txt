@@ -1,0 +1,14 @@
+Data: 25 lutego 1991
+Ofiary: 28 zołnierzy i 100 cywili
+Tragedia to wyzej
+Istota problemu:
+- Trzeba zdawać sobie sprawę, ze komputer nie potrafi liczyc
+Dane:
+- Uzycie 24-bitowego rejestru
+- Obicnanie wartości 1/10 
+- Łączny bład 0.34 sekund
+
+Wnioski:
+Bład na tyle znaczący, ze rakieta poruszajaca się około 
+1.6km na sekundę w tym czasie była 400-600 metrów dalej,
+co spowodowało, ze system obronych chybił

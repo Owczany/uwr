@@ -1,0 +1,8 @@
+example.org ip: 23.215.0.133
+
+
+
+
+# WYZWANIE
+
+Stworzyć maszyny i zmienić im kart sieciowe na połączenie wewnętrzne z nazwa local1

@@ -1,0 +1,33 @@
+STANDARD IEEE 754
+- Pojedyncza precyzja
+32 bity 
+* 1 bit na znak (+ lub -)
+* 8 znaków na cechę <-127; 128>
+* 23 bity na mantysę
+
+- Podwojna precyzja
+64 bity
+* 1 bit na znak (+ lub -)
+* 11 bitów na cechę <-1023; 1024>
+* 52 bity na mantysę 
+
+Mantysa [1, 2)
+
+Specjalne wartości:
+- Zero dodatnie i zero ujemne - Z której strony idzie do 0
+- Nieskończoność - Wartości większe od największych mozliwych
+- Not-a-Number (NaN) - cichy i sygnalizujący
+
+Reguły zaokrąglania
+Zaokrąglanie do najblizszej wartości
+Zaokrąglanie w kierunku zera
+Zaokrąglanie w kierunku +inf
+Zaokrąglanie w kierunku -inf
+
+Tryby i wyjątki
+- Overflow (przepełnienie)
+- Underflow (niedomiar)
+- Divide-by-zero
+- Invalid operation (sqrt(-1))
+
+Standard IEEE 754 jest kompatebilny z procesorami Intela ARM AMD itp.

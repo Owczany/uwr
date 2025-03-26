@@ -1,0 +1,9 @@
+EXEC sys.sp_who; 
+
+SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES
+WHERE TABLE_NAME LIKE '#%' OR  TABLE_NAME LIKE '##%'
+
+SELECT * FROM ##GlobalTempTable
+
+SELECT * FROM #LocalTempTable
+

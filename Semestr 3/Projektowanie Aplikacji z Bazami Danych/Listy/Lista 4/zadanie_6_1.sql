@@ -1,0 +1,18 @@
+DROP TABLE IF EXISTS numbers
+GO
+
+CREATE TABLE numbers (
+    [number] INT
+)
+GO
+
+INSERT INTO numbers ([number])
+VALUES (120), (1), (32), (230)
+GO
+
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+BEGIN TRANSACTION;
+SELECT * FROM numbers WHERE [number] > 100;
+
+SELECT * FROM numbers WITH (NOLOCK) WHERE [number] > 100;
+COMMIT

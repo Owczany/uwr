@@ -1,0 +1,54 @@
+{
+    "books": [
+        {
+            "title": "Book 1",
+            "author": "Author 1",
+            "year": 2020
+        },
+        {
+            "title": "Book 2",
+            "author": "Author 2",
+            "year": 2018
+        }
+    ],
+    "readers": [
+        {
+            "name": "Reader 1",
+            "email": "reader1@example.com"
+        },
+        {
+            "name": "Reader 2",
+            "email": "reader2@example.com"
+        },
+        {
+            "name": "Reader 3",
+            "email": "reader3@example.com"
+        }
+    ],
+    "specimens": [
+        {
+            "book_id": 1,
+            "condition": "Good"
+        },
+        {
+            "book_id": 1,
+            "condition": "Fair"
+        },
+        {
+            "book_id": 1
+        },
+        {
+            "book_id": 2,
+            "condition": "Good"
+        },
+        {
+            "book_id": 2
+        }
+    ],
+    "borrowings": [
+        {
+            "specimen_id": 1,
+            "reader_id": 1
+        }
+    ]
+}

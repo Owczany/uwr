@@ -1,0 +1,23 @@
+# LINUX (DEBIAN)
+startx - Odpala system graficzny
+
+
+
+# SIECI
+host -t a [nazwa domeny]
+host -t ns [nazwa domeny]
+dig [nazwa domeny]
+nslookup [nazwa domeny]
+
+netstat -l46
+netstat -l46n
+
+telnet localhost 7
+
+systemctl start ssh
+
+
+
+# INNE
+folder /etc/hosts przechowuje informacje o adresa ip i mapuje je na nazwy
+

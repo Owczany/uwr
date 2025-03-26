@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wydruk zgłoszenia</title>
+</head>
+
+<body>
+    <h1>Pasek zgłoszenia zadań</h1>
+    <p><strong>Imię:</strong> <%= firstName %></p>
+    <p><strong>Nazwisko:</strong> <%= lastName %></p>
+    <p><strong>Nazwa zajęć:</strong> <%= course %></p>
+
+    <h3>Zadania:</h3>
+    <table border="1">
+        <tr>
+            <th>Zadanie</th>
+            <th>Punkty</th>
+        </tr>
+        <% tasks.forEach((task) => { %>
+            <tr>
+                <td>Zadanie <%= task.task %></td>
+                <td><%= task.points %></td>
+            </tr>
+        <% }); %>
+    </table>
+
+    <button onclick="window.print()">Drukuj</button>
+</body>
+
+</html>
