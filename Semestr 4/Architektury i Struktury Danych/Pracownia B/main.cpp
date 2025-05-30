@@ -1,51 +1,92 @@
-
 #include <iostream>
-#include <vector>
-#include <cstdio>
 
 using namespace std;
 
+struct Node
+{
+    long long value;
+    int row;
+};
 
-// void przesun_w_gore(array<int> K, int i) {
-//     int k = i;
+Node heap[1'000'000];
 
-// }
+int heap_size;
 
-void przesun_w_dol() {
-
+void create_heap(int M)
+{
+    heap_size = M;
+    long long value = M * M;
+    heap[0] = {value, M};
+    for (int i = 1; i < M; i++)
+    {
+        value -= ( (M - i) + (M - i) + 1);
+        heap[i] = {value, (M - i)};
+    }
 }
+
+// Debug
+void print_heap(int M) {
+    for (int i = 0; i < M; i++) {
+        printf("heap[%d] = { value: %lld, row: %d }\n", i, heap[i].value, heap[i].row);
+    }
+}
+
+void swap(Node &a, Node &b)
+{
+    Node temp = a;
+    a = b;
+    b = temp;
+}
+
+void heapifyDown(int index)
+{
+    while (true)
+    {
+        int left = 2 * index + 1;
+        int right = 2 * index + 2;
+        int largest = index;
+
+        if (left < heap_size && heap[left].value > heap[largest].value)
+            largest = left;
+        if (right < heap_size && heap[right].value > heap[largest].value)
+            largest = right;
+
+        if (largest != index)
+        {
+            swap(heap[index], heap[largest]);
+            index = largest;
+        }
+        else
+            break;
+    }
+}
+
+long long change() {
+    long long res = heap[0].value;
+    heap[0].value -= heap[0].row;
+    heapifyDown(0);
+    return res;
+}
+
 
 int main()
 {
-    int M, k;
-    int i;
-    std::cin >> M >> k; // Wczytanie dwóch liczb
+    int M, K;
+    scanf("%d %d", &M, &K);
+    create_heap(M);
+    long long last_value = -1;
 
-    // Obliczenie wymaganej wielkości tablicy
-    int size = (M * (M + 1)) / 2;
-
-    // Dynamiczna alokacja tablicy
-    long long *arr = new long long[size];
-
-    // Przykładowe przypisanie wartości
-    i = 0;
-    for (int row = 1; row <= M; ++row)
+    while (K > 0)
     {
-        for (int col = row; col <= M; ++col)
-        {
-            arr[i++] = row * col; 
+        long long value;
+        value = change();
+        if (value != last_value) {
+            last_value = value;
+            K--;
+            printf("%lld\n", value);
         }
     }
-
-    // Przykładowe wyświetlenie wartości
-    for (int i = 0; i < size; ++i)
-    {
-        std::cout << arr[i] << " ";
-    }
-    std::cout << std::endl;
-
-    // Zwolnienie pamięci
-    delete[] arr;
+    
 
     return 0;
 }

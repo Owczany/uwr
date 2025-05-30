@@ -1,0 +1,273 @@
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}  % obsługa polskich znaków
+\usepackage{amsmath}         % wzory matematyczne
+\usepackage{amsfonts}
+\usepackage{titlesec}
+
+\titlespacing*{\section}
+{0pt}{1.5em}{1em} % {left}{before-sep}{after-sep}
+
+\titlespacing*{\subsection}
+{0pt}{1em}{0.7em}
+
+
+
+\title{Zadanie nr 2 RPIS}
+\author{Piotr Pijanowski}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Treść zadania}
+
+\begin{enumerate}
+  \item Niech \( n \) oznacza cyfrę dziesiątek indeksu powiększoną o 1, a \( m \) – cyfrę jedności powiększoną o 1.
+  \item Rozpatrujemy trójkąt o wierzchołkach: \( (0, 0),\ (n, 0),\ (n, m) \).
+  \item Na tym trójkącie zmienna \( (X, Y) \) ma stałą gęstość, tzn. \( f(x, y) = C \).
+  \item Wyznaczyć gęstość zmiennej \( T = X + 2Y \).
+  \item Preferowane rozwiązanie to \LaTeX{}. Może być inne narzędzie (Markdown, długopis), pod warunkiem, że przesłane rozwiązanie zawarte będzie w pliku \texttt{Z2\_<indeks>.pdf}.
+\end{enumerate}
+
+\section{Wprowadzenie}
+
+Mój numer indeksu to 346952, więc zgodnie z treścią zadania przyjmujemy:
+\[
+n = 6 \quad \text{(cyfra dziesiątek + 1)}, \qquad m = 3 \quad \text{(cyfra jedności + 1)}.
+\]
+
+Rozpatrujemy trójkąt o wierzchołkach:
+\[
+(0, 0), \quad (6, 0), \quad (6, 3),
+\]
+wynikający z wartości \( n \) i \( m \).
+
+Zmienna losowa \( (X, Y) \) ma stałą gęstość na tym trójkącie, czyli:
+\[
+f(x, y) = C,
+\]
+gdzie \( C \) jest stałą do wyznaczenia tak, aby \( f(x, y) \) była poprawną funkcją gęstości.
+
+Następnie dokonamy podstawienia:
+\[
+T = X + 2Y, \qquad X = X,
+\]
+czyli przejdziemy do nowych zmiennych \( (T, X) \).
+
+Wyliczymy wyznacznik Jacobiego dla tej transformacji, wyznaczymy nowe granice całkowania oraz na tej podstawie obliczymy marginalną gęstość zmiennej \( T \), czyli \( f_T(t) \).
+
+\section{Wyznaczenie stałej \( C \)}
+
+Aby funkcja \( f(x, y) \) była poprawną funkcją gęstości, całka po całym nośniku musi być równa 1, czyli:
+
+\[
+\iint_{\mathbb{R}^2} f(x, y) \, dx \, dy = 1.
+\]
+
+W naszym przypadku zmienna \( (X, Y) \) jest rozłożona jednostajnie na trójkącie o wierzchołkach \( (0, 0),\ (6, 0),\ (6, 3) \), a poza tym obszarem gęstość wynosi 0. Ponieważ funkcja \( f(x, y) \) przyjmuje stałą wartość \( C \) na tym trójkącie, możemy zapisać:
+
+\[
+\int_{x=0}^{6} \int_{y=0}^{\frac{1}{2}x} C \, dy \, dx = 1.
+\]
+
+Obliczamy całkę:
+
+\[
+\int_{0}^{6} \left[ C y \right]_0^{\frac{1}{2}x} dx = \int_{0}^{6} C \cdot \frac{1}{2}x \, dx = C \cdot \frac{1}{2} \int_{0}^{6} x \, dx = C \cdot \frac{1}{2} \cdot \left[ \frac{1}{2}x^2 \right]_0^6 = C \cdot \frac{1}{2} \cdot \frac{36}{2} = 9C.
+\]
+
+Zatem:
+
+\[
+9C = 1 \quad \Rightarrow \quad C = \frac{1}{9}.
+\]
+
+Ostatecznie:
+
+\[
+f(x, y) =
+\begin{cases}
+\frac{1}{9} & \text{dla } (x, y) \text{ należących do trójkąta}, \\
+0 & \text{w przeciwnym razie}.
+\end{cases}
+\]
+
+\section{Podstawienie nowych zmiennych i wyznaczenie Jacobianu}
+
+Wprowadzamy nowe zmienne:
+\[
+T = X + 2Y, \qquad X = X
+\]
+Zmienna \( X \) pozostaje bez zmian (dla zapisu), a zmienna \( T \) jest kombinacją liniową \( X \) i \( Y \).
+
+Aby przeprowadzić zmianę zmiennych, zapisujemy przekształcenie odwrotne:
+\[
+X = X, \qquad Y = \frac{T - X}{2}
+\]
+
+Następnie obliczamy wyznacznik Jacobianu tej transformacji. Tworzymy macierz pochodnych cząstkowych:
+
+\[
+J =
+\begin{bmatrix}
+\frac{\partial x}{\partial x} & \frac{\partial x}{\partial t} \\
+\frac{\partial y}{\partial x} & \frac{\partial y}{\partial t}
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 \\
+-\frac{1}{2} & \frac{1}{2}
+\end{bmatrix}
+\]
+
+Wyznacznik Jacobianu wynosi:
+\[
+|J| = 1 \cdot \frac{1}{2} - 0 \cdot \left(-\frac{1}{2}\right) = \frac{1}{2}
+\]
+
+Wartość bezwzględna tego wyznacznika wynosi \( \left| \det J \right| = \frac{1}{2} \), co będzie potrzebne przy zmianie zmiennych w gęstości.
+
+\section{Wyznaczenie \( f_T(t) \), czyli gęstości zmiennej \( T \)}
+
+\subsection*{(a) Związek gęstości}
+
+Ponieważ gęstość \( f(x, y) = \frac{1}{9} \), a po dokonaniu podstawienia zmiennych \( T = X + 2Y \), \( X = X \), wiemy, że:
+
+\[
+g(x, t) = f\left(x, y = \frac{t - x}{2}\right) \cdot \left| \det J \right| = \frac{1}{9} \cdot \frac{1}{2} = \frac{1}{18}
+\]
+
+czyli nowa gęstość \( g(x, t) \) w układzie \( (x, t) \) wynosi:
+
+\[
+g(x, t) = 
+\begin{cases}
+\frac{1}{18} & \text{jeśli } (x, y = \frac{t - x}{2}) \text{ należy do trójkąta}, \\
+0 & \text{w przeciwnym razie}.
+\end{cases}
+\]
+
+\subsection*{(b) Dziedzina zmiennej \( T \)}
+
+Aby wyznaczyć dziedzinę zmiennej \( T \), zauważmy, że:
+\[
+T = X + 2Y, \quad \text{gdzie } X \in [0, 6],\ Y \in \left[0, \frac{1}{2}X\right]
+\]
+
+Obliczamy skrajne możliwe wartości \( T \):
+\begin{itemize}
+    \item Minimalna wartość: \( X = 0,\ Y = 0 \Rightarrow T = 0 \)
+    \item Maksymalna wartość: \( X = 6,\ Y = 3 \Rightarrow T = 6 + 2 \cdot 3 = 12 \)
+\end{itemize}
+
+Zatem:
+
+\[
+T \in [0, 12]
+\]
+
+\subsection*{(c) Warunki ograniczające zmienne}
+
+Oryginalnie:
+\[
+X \in [0, 6], \quad Y \in [0, 3]
+\]
+
+Po podstawieniu \( Y = \frac{t - x}{2} \), musimy zapewnić:
+
+\[
+0 \leq \frac{t - x}{2} \leq \frac{1}{2}x
+\quad \Rightarrow \quad x \leq t \leq 2x
+\]
+
+Przekształcamy do przedziału dla \( x \):
+
+\[
+\frac{t}{2} \leq x \leq t
+\]
+
+Dodatkowo \( x \in [0, 6] \), więc ostatecznie:
+
+\[
+x \in \left[\max\left(\frac{t}{2}, 0\right), \min(t, 6)\right]
+\]
+
+---
+
+\subsection*{(d) Wyznaczenie \( f_T(t) \) przez całkowanie}
+
+Aby wyznaczyć gęstość \( f_T(t) \), całkujemy \( g(x, t) \) po dopuszczalnych wartościach \( x \):
+
+\[
+f_T(t) = \int_{\frac{t}{2}}^{\min(t, 6)} \frac{1}{18} \, dx
+\]
+
+Zatem:
+
+\begin{itemize}
+  \item Dla \( t \in [0, 6] \):
+
+  \[
+  f_T(t) = \int_{\frac{t}{2}}^{t} \frac{1}{18} \, dx = \frac{1}{18} \cdot \left(t - \frac{t}{2} \right) = \frac{t}{36}
+  \]
+
+  \item Dla \( t \in [6, 12] \):
+
+  \[
+  f_T(t) = \int_{\frac{t}{2}}^{6} \frac{1}{18} \, dx = \frac{1}{18} \cdot \left(6 - \frac{t}{2} \right) = \frac{1}{3} - \frac{t}{36}
+  \]
+\end{itemize}
+
+\subsection*{(e) Sprawdzenie, czy \( f_T(t) \) jest funkcją gęstości}
+
+Sprawdzamy, czy całkowita całka z funkcji \( f_T(t) \) na jej nośniku jest równa 1:
+
+\[
+\int_0^{12} f_T(t) \, dt = \int_0^6 \frac{t}{36} \, dt + \int_6^{12} \left( \frac{1}{3} - \frac{t}{36} \right) dt
+\]
+
+Obliczamy pierwszą całkę:
+
+\[
+\int_0^6 \frac{t}{36} \, dt = \frac{1}{36} \int_0^6 t \, dt = \frac{1}{36} \cdot \left[ \frac{1}{2}t^2 \right]_0^6 = \frac{1}{36} \cdot \frac{36}{2} = \frac{1}{36} \cdot 18 = \frac{1}{2}
+\]
+
+Obliczamy drugą całkę:
+
+\[
+\int_6^{12} \left( \frac{1}{3} - \frac{t}{36} \right) dt = \int_6^{12} \frac{1}{3} \, dt - \int_6^{12} \frac{t}{36} \, dt
+\]
+
+\[
+= \frac{1}{3}(12 - 6) - \frac{1}{36} \cdot \left[ \frac{1}{2}t^2 \right]_6^{12}
+= 2 - \frac{1}{36} \cdot \left( \frac{144}{2} - \frac{36}{2} \right)
+= 2 - \frac{1}{36} \cdot (72 - 18)
+= 2 - \frac{1}{36} \cdot 54 = 2 - \frac{3}{2} = \frac{1}{2}
+\]
+
+Zatem:
+
+\[
+\int_0^{12} f_T(t) \, dt = \frac{1}{2} + \frac{1}{2} = 1
+\]
+
+Funkcja \( f_T(t) \) spełnia więc warunki funkcji gęstości prawdopodobieństwa.
+
+
+\section{Ostateczny wynik: gęstość zmiennej \( T \)}
+
+\[
+f_T(t) =
+\begin{cases}
+\frac{t}{36} & \text{dla } t \in [0, 6] \\
+\frac{1}{3} - \frac{t}{36} & \text{dla } t \in [6, 12] \\
+0 & \text{poza przedziałem } [0, 12]
+\end{cases}
+\]
+
+
+
+\end{document}
