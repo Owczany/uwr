@@ -15,14 +15,14 @@
 #include <time.h>
 #include <sys/select.h>
 
-#define BACKLOG 10               // Maksymalna liczba oczekujących połączeń
-#define BUF_SIZE 8192            // Rozmiar bufora danych
-#define KEEP_ALIVE_TIMEOUT 1     // Czas oczekiwania na kolejne żądanie (sekundy)
+#define BACKLOG 10
+#define BUF_SIZE 8192
+#define KEEP_ALIVE_TIMEOUT 1 // sekunda
 
-// Wypisuje sposób użycia programu i kończy działanie
+// Wypisuje instrukcję użycia programu
 void usage(const char *progname)
 {
-    fprintf(stderr, "Użycie: %s <port> <katalog>\n", progname);
+    fprintf(stderr, "U\u017cycie: %s <port> <katalog>\n", progname);
     exit(EXIT_FAILURE);
 }
 
@@ -40,7 +40,7 @@ const char *get_mime_type(const char *path)
     return "application/octet-stream";
 }
 
-// Wysyła odpowiedź HTTP z nagłówkiem i treścią (jeśli obecna)
+// Wysyła odpowiedź HTTP z treścią body (lub bez)
 void send_response(int client_fd, int status, const char *status_text, const char *content_type, const char *body)
 {
     char header[1024];
@@ -57,7 +57,7 @@ void send_response(int client_fd, int status, const char *status_text, const cha
     if (body && send(client_fd, body, length, 0) < 0) perror("send body");
 }
 
-// Wysyła zawartość pliku do klienta
+// Wysyła zawartość pliku
 void send_file(int client_fd, const char *path)
 {
     int fd = open(path, O_RDONLY);
@@ -77,7 +77,6 @@ void send_file(int client_fd, const char *path)
     int size = st.st_size;
     const char *mime = get_mime_type(path);
 
-    // Wysyłanie nagłówka HTTP
     char header[1024];
     snprintf(header, sizeof(header),
              "HTTP/1.1 200 OK\r\n"
@@ -88,7 +87,6 @@ void send_file(int client_fd, const char *path)
              mime, size);
     if (send(client_fd, header, strlen(header), 0) < 0) perror("send header");
 
-    // Wysyłanie zawartości pliku
     char buffer[4096];
     ssize_t n;
     while ((n = read(fd, buffer, sizeof(buffer))) > 0)
@@ -102,97 +100,94 @@ void send_file(int client_fd, const char *path)
     close(fd);
 }
 
-// Obsługuje pojedynczego klienta (obsługa wielu zapytań w jednym połączeniu)
+// Obsługuje pojedyncze zapytanie klienta
+
+
 void handle_client(int client_fd, const char *base_dir) {
     char buffer[BUF_SIZE];
     char method[8], path[1024], protocol[16];
     char hostname[256];
-    char domain_dir[2048];
     char fullpath[2048];
     char real_fullpath[2048];
     char real_base[2048];
 
-    // Ustawienie timeoutu keep-alive
+    // Timeout w sekundach
     struct timeval timeout;
-    timeout.tv_sec = KEEP_ALIVE_TIMEOUT;
+    timeout.tv_sec = 1;
     timeout.tv_usec = 0;
+
+    realpath(base_dir, real_base);
 
     while (1) {
         fd_set fds;
         FD_ZERO(&fds);
         FD_SET(client_fd, &fds);
 
-        // Czekaj na dane od klienta z timeoutem
         int ready = select(client_fd + 1, &fds, NULL, NULL, &timeout);
-        if (ready <= 0) break;
+        if (ready <= 0) break; // timeout lub błąd
 
-        // Odbierz dane
         ssize_t received = recv(client_fd, buffer, BUF_SIZE - 1, 0);
-        if (received <= 0) break;
+        if (received <= 0) break; // klient zamknął połączenie
 
         buffer[received] = '\0';
         printf("DEBUG: Otrzymano zapytanie:\n%s\n", buffer);
 
-        // Parsowanie linii żądania (metoda, ścieżka, protokół)
         if (sscanf(buffer, "%7s %1023s %15s", method, path, protocol) != 3) {
-            send_response(client_fd, 501, "Not Implemented", "text/html; charset=utf-8", "<h1>501 Not Implemented</h1>");
+            send_response(client_fd, 501, "Not Implemented", "text/html; charset=utf-8",
+                          "<h1>501 Not Implemented</h1>");
             break;
         }
 
-        // Obsługiwane tylko zapytania GET
         if (strcmp(method, "GET") != 0) {
-            send_response(client_fd, 501, "Not Implemented", "text/html; charset=utf-8", "<h1>501 Not Implemented</h1>");
+            send_response(client_fd, 501, "Not Implemented", "text/html; charset=utf-8",
+                          "<h1>501 Not Implemented</h1>");
             break;
         }
 
-        // Odczytanie nagłówka Host
         char *host = strstr(buffer, "\nHost:");
         if (!host) host = strstr(buffer, "\nhost:");
         if (!host) {
-            send_response(client_fd, 501, "Not Implemented", "text/html; charset=utf-8", "<h1>501 Host header missing</h1>");
+            send_response(client_fd, 501, "Not Implemented", "text/html; charset=utf-8",
+                          "<h1>501 Host header missing</h1>");
             break;
         }
         host += 6;
         while (*host == ' ') host++;
         sscanf(host, "%255[^:\r\n]", hostname);
 
-        // Zbudowanie ścieżki do zasobu
-        snprintf(domain_dir, sizeof(domain_dir), "%s/%s", base_dir, hostname);
-        snprintf(fullpath, sizeof(fullpath), "%s%s", domain_dir, path);
+        snprintf(fullpath, sizeof(fullpath), "%s/%s%s", base_dir, hostname, path);
 
-        // Obsługa przekierowania z katalogu (dodanie /index.html)
         struct stat st;
         if (stat(fullpath, &st) == 0 && S_ISDIR(st.st_mode)) {
             char location[1024];
             if (path[strlen(path) - 1] != '/')
-                snprintf(location, sizeof(location), "HTTP/1.1 301 Moved Permanently\r\nLocation: %s/index.html\r\n\r\n", path);
+                snprintf(location, sizeof(location),
+                         "HTTP/1.1 301 Moved Permanently\r\nLocation: %s/index.html\r\n\r\n", path);
             else
-                snprintf(location, sizeof(location), "HTTP/1.1 301 Moved Permanently\r\nLocation: %sindex.html\r\n\r\n", path);
+                snprintf(location, sizeof(location),
+                         "HTTP/1.1 301 Moved Permanently\r\nLocation: %sindex.html\r\n\r\n", path);
             send(client_fd, location, strlen(location), 0);
             continue;
         }
 
-        // Sprawdzenie ścieżki rzeczywistej (ochrona przed ../)
-        realpath(domain_dir, real_base);
         realpath(fullpath, real_fullpath);
         printf("DEBUG: fullpath = %s\n", real_fullpath);
         printf("DEBUG: base_dir = %s\n", real_base);
-
         if (strncmp(real_fullpath, real_base, strlen(real_base)) != 0) {
-            send_response(client_fd, 403, "Forbidden", "text/html; charset=utf-8", "<h1>403 Forbidden</h1>");
+            send_response(client_fd, 403, "Forbidden", "text/html; charset=utf-8",
+                          "<h1>403 Forbidden</h1>");
             continue;
         }
 
-        // Wysyłanie pliku
         send_file(client_fd, real_fullpath);
 
-        // Sprawdzenie nagłówka Connection
+        // Jeżeli nagłówek zawiera "Connection: close", zakończ pętlę
         if (strstr(buffer, "Connection: close") || strstr(buffer, "connection: close")) {
             break;
         }
 
-        // Reset timeoutu
-        timeout.tv_sec = KEEP_ALIVE_TIMEOUT;
+        // Reset timeout dla kolejnego zapytania
+        timeout.tv_sec = 1;
         timeout.tv_usec = 0;
     }
 
@@ -201,10 +196,8 @@ void handle_client(int client_fd, const char *base_dir) {
 
 int main(int argc, char *argv[])
 {
-    // Sprawdzenie liczby argumentów
     if (argc != 3) usage(argv[0]);
 
-    // Parsowanie numeru portu
     int port = atoi(argv[1]);
     if (port <= 0 || port > 65535)
     {
@@ -212,7 +205,6 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    // Sprawdzenie czy katalog z zasobami istnieje
     const char *web_root = argv[2];
     struct stat st;
     if (stat(web_root, &st) != 0 || !S_ISDIR(st.st_mode))
@@ -221,21 +213,17 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    // Utworzenie gniazda
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (server_fd < 0) { perror("socket"); exit(EXIT_FAILURE); }
 
-    // Ustawienie opcji socketu
     int optval = 1;
     setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 
-    // Inicjalizacja struktury adresowej
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    // Powiązanie gniazda z adresem
     if (bind(server_fd, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
         perror("bind");
@@ -243,7 +231,6 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    // Rozpoczęcie nasłuchiwania
     if (listen(server_fd, BACKLOG) < 0)
     {
         perror("listen");
@@ -253,7 +240,6 @@ int main(int argc, char *argv[])
 
     printf("Serwer nasłuchuje na porcie %d, katalog: %s\n", port, web_root);
 
-    // Główna pętla obsługi klientów
     while (1)
     {
         struct sockaddr_in client_addr;
