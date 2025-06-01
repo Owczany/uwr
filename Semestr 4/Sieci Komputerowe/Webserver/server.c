@@ -13,6 +13,10 @@
 #include <sys/select.h>
 #include <limits.h>  // dla PATH_MAX
 
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
 #define BUF_SIZE 8192            // Rozmiar bufora danych
 #define KEEP_ALIVE_TIMEOUT 1     // Czas oczekiwania na kolejne żądanie (sekundy)
 
@@ -163,7 +167,7 @@ void handle_client(int client_fd, const char *base_dir) {
             send_response(client_fd, 404, "Not Found", "text/html; charset=utf-8", "<h1>404 Not Found</h1>", 0);
             continue;
         }
-        
+
         if (strncmp(real_fullpath, real_base, strlen(real_base)) != 0) {
             send_response(client_fd, 403, "Forbidden", "text/html; charset=utf-8", "<h1>403 Forbidden</h1>", 0);
             continue;
