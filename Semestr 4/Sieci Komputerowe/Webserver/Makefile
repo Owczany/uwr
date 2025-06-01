@@ -1,19 +1,31 @@
-# Plik: Makefile
-
-CC = gcc
-CFLAGS = -Wall -Wextra -std=c99
+# Nazwa pliku wykonywalnego
 TARGET = webserver
 
+# Kompilator
+CC = gcc
+
+# Flagi kompilatora
+CFLAGS = -Wall -Wextra -std=c11 -O2
+
+# Pliki źródłowe i obiektowe
+SRCS = webserver.c server.c
+OBJS = $(SRCS:.c=.o)
+
+# Domyślny cel
 all: $(TARGET)
 
-$(TARGET): main.o
-	$(CC) $(CFLAGS) -o $(TARGET) main.o
+# Kompilacja pliku wynikowego
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^
 
-main.o: main.c
-	$(CC) $(CFLAGS) -c main.c
+# Reguła dla plików .o
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
+# Czyszczenie clean
 clean:
-	rm -f *.o
+	rm -f $(OBJS) $(TARGET)
 
+# Czyszczenie distclean
 distclean: clean
 	rm -f $(TARGET)
