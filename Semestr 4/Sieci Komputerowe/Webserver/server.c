@@ -11,8 +11,8 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/select.h>
-#include <limits.h>  // dla PATH_MAX
 
+#define PATH_MAX 1024
 #define BUF_SIZE 8192            // Rozmiar bufora danych
 #define KEEP_ALIVE_TIMEOUT 1     // Czas oczekiwania na kolejne żądanie (sekundy)
 
