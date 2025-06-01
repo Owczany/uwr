@@ -92,7 +92,7 @@ void send_file(int client_fd, const char *path)
 
 void handle_client(int client_fd, const char *base_dir) {
     char buffer[BUF_SIZE];
-    char method[8], path[1023], protocol[16];
+    char method[8], path[1024], protocol[16];
     char hostname[256];
     char domain_dir[PATH_MAX];
     char fullpath[PATH_MAX];
