@@ -163,10 +163,7 @@ void handle_client(int client_fd, const char *base_dir) {
             send_response(client_fd, 404, "Not Found", "text/html; charset=utf-8", "<h1>404 Not Found</h1>", 0);
             continue;
         }
-
-        printf("DEBUG: fullpath = %s\n", real_fullpath);
-        printf("DEBUG: base_dir = %s\n", real_base);
-
+        
         if (strncmp(real_fullpath, real_base, strlen(real_base)) != 0) {
             send_response(client_fd, 403, "Forbidden", "text/html; charset=utf-8", "<h1>403 Forbidden</h1>", 0);
             continue;
