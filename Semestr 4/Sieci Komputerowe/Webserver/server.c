@@ -11,8 +11,8 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/select.h>
+#include <limits.h>  // dla PATH_MAX
 
-#define PATH_MAX 1024
 #define BUF_SIZE 8192            // Rozmiar bufora danych
 #define KEEP_ALIVE_TIMEOUT 1     // Czas oczekiwania na kolejne żądanie (sekundy)
 
@@ -155,8 +155,12 @@ void handle_client(int client_fd, const char *base_dir) {
             continue;
         }
 
-        if (!realpath(domain_dir, real_base) || !realpath(fullpath, real_fullpath)) {
+        if (!realpath(domain_dir, real_base)) {
             send_response(client_fd, 500, "Internal Server Error", "text/html; charset=utf-8", "<h1>500 Internal Server Error</h1>", 0);
+            continue;
+        }
+        if (!realpath(fullpath, real_fullpath)) {
+            send_response(client_fd, 404, "Not Found", "text/html; charset=utf-8", "<h1>404 Not Found</h1>", 0);
             continue;
         }
 
